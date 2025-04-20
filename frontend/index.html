@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchoolNavigator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>B楼导航系统</h1>
+    </div>
+    
+    <div class="container">
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+        
+        <div class="navigation-form">
+            <h2 class="form-title">路线规划</h2>
+            
+            <div class="input-group-container">
+                <div class="input-group">
+                    <label for="start-point">起点</label>
+                    <select id="start-point">
+                        <option value="">请选择宿舍楼</option>
+                        <option value="海棠七号楼">海棠七号楼</option>
+                        <option value="海棠八号楼">海棠八号楼</option>
+                        <option value="海棠九号楼">海棠九号楼</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="end-point">终点</label>
+                    <input type="text" id="end-point" value="B栋教学楼" readonly>
+                </div>
+            </div>
+            
+            <button class="search-btn" id="search-route">查找路线</button>
+            
+            <div class="text-navigation" id="text-navigation">
+                文字导航将在这里显示
+            </div>
+            
+            <div class="navigation-detail-link">
+                <a href="detail.html" id="detail-link">查看详细导航 &raquo;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入百度地图API -->
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=8dLiLjsb838OSqw3iHO7HTgA0db9v3C6"></script>
+    <script src="script.js"></script>
+</body>
+</html>

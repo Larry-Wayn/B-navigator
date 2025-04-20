@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航详情 - SchoolNavigator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>B楼导航详情</h1>
+    </div>
+    
+    <div class="detail-container">
+        <div class="photos-container">
+            <div class="photo-item">
+                <!-- 第一张照片  -->
+                <img src="images/BMap.jpg">
+            </div>
+            <div class="photo-item">
+                <!-- 第二张照片  -->
+                <img src="images/southB.jpg">
+            </div>
+        </div>
+        
+        <div class="detail-info">
+            <a href="index.html" class="back-btn">&laquo; 返回</a>
+            <h2 id="route-title">导航详情</h2>
+            
+            <div class="text-navigation" id="detail-text-navigation">
+                楼内导航文字将在这里显示
+            </div>
+            
+            <div id="detail-content">
+                <p>如果这样你还是找不到，那也没办法了，谁叫它是获得了鲁班奖的教学楼</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 从URL参数获取起点信息
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromPoint = urlParams.get('from');
+            
+            if (fromPoint) {
+                document.getElementById('route-title').textContent = `从 ${fromPoint} 到 B栋教学楼的导航`;
+            }
+        }
+    </script>
+</body>
+</html>
