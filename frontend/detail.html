@@ -12,41 +12,53 @@
     </div>
     
     <div class="detail-container">
-        <div class="photos-container">
-            <div class="photo-item">
-                <!-- 第一张图片  -->
-                <img src="images/BMap.jpg">
-            </div>
-            <div class="photo-item">
-                <!-- 第二张照片  -->
-                <img src="images/exit?.jpg">
+        <div class="left-column">
+            <div class="entrance-photo">
+                <!-- 第二张照片 - 入口图片 -->
+                <img id="entrance-image" src="" alt="入口图片">
             </div>
         </div>
-        
-        <div class="detail-info">
-            <a href="index.html" class="back-btn">&laquo; 返回</a>
-            <h2 id="route-title">导航详情</h2>
-            
-            <div class="text-navigation" id="detail-text-navigation">
-                楼内导航文字将在这里显示
+        <div class="right-column">
+            <div class="detail-info">
+                <a href="index.html" class="back-btn">&laquo; 返回</a>
+                <h2 id="route-title">导航详情</h2>
+                <div class="text-navigation" id="detail-text-navigation">
+                    楼内导航文字将在这里显示
+                </div>
+                <div id="detail-content">
+                    <p>注:默认从教学楼北边的出入口进入，南楼教室从东到西序号增大，梯度下降</p>
+                </div>
             </div>
-            
-            <div id="detail-content">
-                <p>如果这样你还是找不到，那也没办法了，谁叫它是获得了鲁班奖的教学楼</p>
+            <div class="floor-plan-photo">
+                <!-- 第一张图片 - B楼平面图 -->
+                <img src="images/BMap.jpg" alt="B楼平面图">
             </div>
         </div>
     </div>
 
     <script>
-        // 从URL参数获取起点信息
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const fromPoint = urlParams.get('from');
+            const toPoint = urlParams.get('to');
             
-            if (fromPoint) {
-                document.getElementById('route-title').textContent = `从 ${fromPoint} 到 B栋教学楼的导航`;
+            const entrancePoint = localStorage.getItem("entrancePoint");
+            const roomDirection = localStorage.getItem("roomDirection");
+            
+            if (fromPoint && toPoint) {
+                document.getElementById('route-title').textContent = `从 ${fromPoint} 到 ${toPoint} 教室的导航`;
+                
+                if (roomDirection) {
+                    document.getElementById('detail-text-navigation').innerHTML = roomDirection;
+                }
+                
+                if (entrancePoint) {
+                    const entranceNumber = entrancePoint.replace("B北口", "");
+                    document.getElementById('entrance-image').src = `images/exit${entranceNumber}.jpg`;
+                    document.getElementById('entrance-image').alt = `${entrancePoint}入口图片`;
+                }
             }
         }
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9349ec2d8b9053f1',t:'MTc0NTM3NTI1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

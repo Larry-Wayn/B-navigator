@@ -18,24 +18,187 @@ const buildingLocations = {
     "B北口12": { lng: 108.838536, lat: 34.132346 }  // 去往北楼的小楼梯口：108.838536,34.132346
 };
 
+// 定义B楼内部的教室布局图
+const buildingLayout = {
+    // 南楼
+    "101": "B北口1",
+    "105": "B北口2",
+    "106": "B北口3",
+    "201": "B北口1",
+    "203": "B北口1",
+    "206": "B北口2",
+    "207": "B北口2",
+    "208": "B北口4",
+    "211": "B北口4",
+    "216": "B北口5",
+    "217": "B北口6",
+    "301": "B北口1",
+    "303": "B北口1",
+    "306": "B北口2",
+    "307": "B北口2",
+    "308": "B北口4",
+    "311": "B北口4",
+    "312": "B北口12",  //cross 2
+    "314": "B北口12",  //cross 1
+    "315": "B北口12",  //cross 1
+    "316": "B北口12",  //cross 1
+    "318": "B北口7",
+    "320": "B北口8",
+    "401": "B北口1",
+    "403": "B北口1",
+    "406": "B北口2",
+    "407": "B北口2",
+    "408": "B北口4",
+    "411": "B北口12",  //cross 2
+    "412": "B北口12",  //cross 2
+    "414": "B北口5",
+    "415": "B北口5",
+    "416": "B北口11",
+    "418": "B北口11",
+    "419": "B北口11",
+    "421": "B北口11",
+    "422": "B北口9",
+    "425": "B北口10",
+    "426": "B北口10",
+    "501": "B北口1",
+    "502": "B北口2",
+    "503": "B北口4",
+    "506": "B北口4",
+    "507": "B北口4",
+    "509": "B北口5",
+    "510": "B北口5",
+    "511": "B北口7",
+    "513": "B北口12",  //corss 1
+    "514": "B北口12",  //cross 1
+    "516": "B北口12",  //cross 1
+    "517": "B北口9",
+    "520": "B北口9",
+    "521": "B北口9",
+    "601": "B北口5",
+    "602": "B北口5",
+    "603": "B北口7",
+    "605": "B北口7",
+    "606": "B北口7",
+    "608": "B北口9",
+    "609": "B北口9",
+    "612": "B北口9",
+    "613": "B北口9",
+    "701": "B北口7",
+    "703": "B北口9",
+    "706": "B北口9",
+    "707": "B北口9",
+    // 北楼
+    "529": "B北口12",
+    "528": "B北口12",
+    "532": "B北口12",
+    "537": "B北口12",
+    "538": "B北口12",
+    "433": "B北口11",
+    "434": "B北口12",
+    "437": "B北口12",
+    "442": "B北口12",
+    "443": "B北口12"
+};
+
+// 教室到入口的导航说明
+const roomDirections = {
+    // 南楼
+    "101": "从北口1进入,向东边看到的第一个教室即是101。",
+    "105": "从北口2进入,向东边看到的第一个教室即是105。",
+    "106": "从北口3进入,向东边看到的第一个教室即是106。",
+    "201": "从北口1进入,从螺旋楼梯1上到2楼,向东边看到的第一个教室即是201。",
+    "203": "从北口1进入,从螺旋楼梯1上到2楼,向西边看到的第一个教室即是203。",
+    "206": "从北口2进入,从螺旋楼梯2上到2楼,向东边看到的第一个教室即是206。",
+    "207": "从北口2进入,从螺旋楼梯2上到2楼,向西边看到的第一个教室即是207。",
+    "208": "从北口4进入,向东边经过第一个教室211,下一个教室即是208。",
+    "211": "从北口4进入,向东边看到的第一个教室即是211。",
+    "216": "从北口5进入,看到的第一个教室即是216。",
+    "217": "从北口6进入,看到的第一个教室即是217。",
+    "301": "从北口1进入,从螺旋楼梯1上到3楼,向东边看到的第一个教室即是301。",
+    "303": "从北口1进入,从螺旋楼梯1上到3楼,向西边看到的第一个教室即是303。",
+    "306": "从北口2进入,从螺旋楼梯2上到3楼,向东边看到的第一个教室即是306。",
+    "307": "从北口2进入,从螺旋楼梯2上到3楼,向西边看到的第一个教室即是307。",
+    "308": "从北口4进入,沿着螺旋楼梯3向上走一层,向东边看到的第一个教室即是308。",
+    "311": "从北口4进入,沿着螺旋楼梯3向上走一层,向西边看到的第一个教室即是311。",
+    "312": "从北口12进入,沿着小楼梯向上走一层,经过北四层通道2,看到的第一个教室即是312。",
+    "314": "从北口12进入,沿着小楼梯向上走一层,经过北四层通道2,看到的第一个教室即是314。",
+    "315": "从北口12进入,沿着小楼梯向上走一层,经过北四层通道1,看到的第一个教室即是315。",
+    "316": "从北口12进入,沿着小楼梯向上走一层,经过北四层通道1,向西走经过第一个教室315,即是316。",
+    "318": "从北口7进入,看到的第一个教室即是318。",
+    "320": "从北口8进入,看到的第一个教室即是320。",
+    "401": "从北口1进入,从螺旋楼梯1上到4楼,向东边看到的第一个教室即是401。",
+    "403": "从北口1进入,从螺旋楼梯1上到4楼,向西边看到的第一个教室即是403。",
+    "406": "从北口2进入,从螺旋楼梯2上到4楼,向东边看到的第一个教室即是406。",
+    "407": "从北口2进入,从螺旋楼梯2上到4楼,向西边看到的第一个教室即是407。",
+    "408": "从北口4进入,沿着螺旋楼梯3向上走两层,向东边看到的第一个教室即是408。",
+    "411": "从北口12进入,沿着小楼梯向上走两层,经过北五层通道2,看到的第一个教室即是411。",
+    "412": "从北口12进入,沿着小楼梯向上走两层,经过北五层通道2,看到的第一个教室即是412。",
+    "414": "从北口5进入,沿着螺旋楼梯4向上走两层,向西看到的第一个教室即是414。",
+    "415": "从北口5进入,沿着螺旋楼梯4向上走两层,向西经过第一个教室414,即是415。",
+    "416": "从北口11进入,上到大平台并进入南楼,向东经过第一个教室418,即是416。",
+    "418": "从北口11进入,上到大平台并进入南楼,向东看到的第一个教室即是418。",
+    "419": "从北口11进入,上到大平台并进入南楼,向西看到的第一个教室即是419。",
+    "421": "从北口11进入,上到大平台并进入南楼,向西经过第一个教室419,即是421。",
+    "422": "从北口9进入,沿着螺旋楼梯6向上走一层,向东看到的第一个教室即是422。",
+    "425": "从北口10进入,向东边看到的第一个教室即是425。",
+    "426": "从北口10进入,向西边看到的第一个教室即是426。",
+    "501": "从北口1进入,从螺旋楼梯1上到5楼,向东边看到的第一个教室即是501。",
+    "502": "从北口2进入,从螺旋楼梯2上到5楼,向西边看到的第一个教室即是502。",
+    "503": "从北口4进入,沿着螺旋楼梯3向上走三层,向东边看到的第一个教室即是503。",
+    "506": "从北口4进入,沿着螺旋楼梯3向上走三层,向西边看到的第一个教室即是506。",
+    "507": "从北口4进入,沿着螺旋楼梯3向上走三层,向西边经过第一个教室506,即是507。",
+    "509": "从北口5进入,沿着螺旋楼梯4向上走三层,向东看到的第一个教室即是509。",
+    "510": "从北口5进入,沿着螺旋楼梯4向上走三层,向西看到的第一个教室即是510。",
+    "511": "从北口7进入,沿着螺旋楼梯5向上走两层,向东边看到的第一个教室即是511。",
+    "513": "从北口12进入,沿着小楼梯向上走两层,经过北五层通道1,向东边看到的第一个教室即是513。",
+    "514": "从北口12进入,沿着小楼梯向上走两层,经过北五层通道1,向西边看到的第一个教室即是514。",
+    "516": "从北口12进入,沿着小楼梯向上走两层,经过北五层通道1,向西边经过第一个教室514,即是516。",
+    "517": "从北口9进入,沿着螺旋楼梯6向上走两层,向东看到的第一个教室即是517。",
+    "520": "从北口9进入,沿着螺旋楼梯6向上走两层,向西看到的第一个教室即是520。",
+    "521": "从北口9进入,沿着螺旋楼梯6向上走两层,向西经过520即是521。",
+    "601": "从北口5进入,沿着螺旋楼梯4向上走三层,向东边看到的第一个教室即是601。",
+    "602": "从北口5进入,沿着螺旋楼梯4向上走三层,向西边经过天台看到的教室即是602。",
+    "603": "从北口7进入,沿着螺旋楼梯5向上走三层,向东边看到的第一个教室即是603。",
+    "605": "从北口7进入,沿着螺旋楼梯5向上走三层,向西边看到的第一个教室即是605。",
+    "606": "从北口7进入,沿着螺旋楼梯5向上走三层,向西边经过第一个教室605,即是606。",
+    "608": "从北口9进入,沿着螺旋楼梯6向上走三层,向东边经过第一个教室609,即是608。",
+    "609": "从北口9进入,沿着螺旋楼梯6向上走三层,向东边看到的第一个教室即是609。",
+    "612": "从北口9进入,沿着螺旋楼梯6向上走三层,向西边看到的第一个教室即是612。",
+    "613": "从北口9进入,沿着螺旋楼梯6向上走三层,向西边经过第一个教室612,即是613。",
+    "701": "从北口7进入,沿着螺旋楼梯5向上走四层,向西边看到的第一个教室即是701。",
+    "703": "从北口9进入,沿着螺旋楼梯6向上走四层,向东边看到的第一个教室即是703。",
+    "706": "从北口9进入,沿着螺旋楼梯6向上走四层,向西边看到的第一个教室即是706。",
+    "707": "从北口9进入,沿着螺旋楼梯6向上走四层,向西边经过第一个教室706,看到的教室即是707。",
+    // 北楼
+    "529": "从北口12进入,沿着小楼梯向上走两层,向西经过第一个教室532,看到的教室即是529教室。",
+    "528": "从北口12进入,沿着小楼梯向上走两层,向西经过两个教室532、529,看到的教室即是528教室。",
+    "532": "从北口12进入,沿着小楼梯向上走两层,向西看到的第一个教室即是532教室。",
+    "537": "从北口12进入,沿着小楼梯向上走两层,向东看到的第一个教室即是537教室。",
+    "538": "从北口12进入,沿着小楼梯向上走两层,向东经过537看到的教室即是538教室。",
+    "433": "从北口11进入,上到大平台并进入北楼,看到的第一个教室即是433教室。",
+    "434": "从北口12进入,沿着小楼梯向上走一层,向西边经过第一个教室437,看到的教室即是434教室。",
+    "437": "从北口12进入,沿着小楼梯向上走一层,向西边看到的第一个教室即是437教室。",
+    "442": "从北口12进入,沿着小楼梯向上走一层,向东边经过第一个教室443,看到的教室即是442教室。",
+    "443": "从北口12进入,沿着小楼梯向上走一层,向东边看到的第一个教室即是443教室。"
+};
+
 // 地图和路线规划变量
 let map;
 let walking;
 let startMarker;
 let endMarker;
 let currentStartPoint = "";
+let currentEndPoint = "";
 
 // 初始化地图
 function initMap() {
     map = new BMap.Map("map");
-    // 设置地图中心点和缩放级别
     const schoolCenter = new BMap.Point(108.837606, 34.133907);  // 108.837606,34.133907
     map.centerAndZoom(schoolCenter, 18);
     map.enableScrollWheelZoom();
     map.addControl(new BMap.NavigationControl());
     map.addControl(new BMap.ScaleControl());
     
-    // 初始化步行导航实例
     walking = new BMap.WalkingRoute(map, {
         renderOptions: { 
             map: map,
@@ -45,18 +208,19 @@ function initMap() {
         onSearchComplete: walkingSearchComplete
     });
 
-    // 绘制校园建筑物
     drawCampusBuildings();
     
-    // 添加路线查询按钮事件
     document.getElementById("search-route").addEventListener("click", searchRoute);
     
-    // 设置详情链接的初始状态
     updateDetailLink();
     
-    // 当起点选择发生变化时更新详情链接
     document.getElementById("start-point").addEventListener("change", function() {
         currentStartPoint = this.value;
+        updateDetailLink();
+    });
+    
+    document.getElementById("end-point").addEventListener("change", function() {
+        currentEndPoint = this.value;
         updateDetailLink();
     });
 }
@@ -64,8 +228,8 @@ function initMap() {
 // 更新详情链接
 function updateDetailLink() {
     const detailLink = document.getElementById("detail-link");
-    if (currentStartPoint) {
-        detailLink.href = `detail.html?from=${encodeURIComponent(currentStartPoint)}`;
+    if (currentStartPoint && currentEndPoint) {
+        detailLink.href = `detail.html?from=${encodeURIComponent(currentStartPoint)}&to=${encodeURIComponent(currentEndPoint)}`;
     } else {
         detailLink.href = "detail.html";
     }
@@ -95,53 +259,58 @@ function searchRoute() {
         return;
     }
     
-    // 保存当前起点
-    currentStartPoint = startInput;
+    if (!endInput) {
+        alert("请选择目标教室！");
+        return;
+    }
     
-    // 更新详情链接
+    currentStartPoint = startInput;
+    currentEndPoint = endInput;
+    
     updateDetailLink();
     
-    // 清除之前的路线
     map.clearOverlays();
     
-    // 获取起点和终点坐标
-    const startLocation = buildingLocations[startInput];
-    const endLocation = buildingLocations[endInput];
+    const entrancePoint = buildingLayout[endInput];
     
-    if (!startLocation || !endLocation) {
+    if (!entrancePoint) {
+        alert("无法确定该教室的入口，请重试！");
+        return;
+    }
+    
+    const startLocation = buildingLocations[startInput];
+    const entranceLocation = buildingLocations[entrancePoint];
+    
+    if (!startLocation || !entranceLocation) {
         alert("无法获取位置信息，请重试！");
         return;
     }
     
     const startPoint = new BMap.Point(startLocation.lng, startLocation.lat);
-    const endPoint = new BMap.Point(endLocation.lng, endLocation.lat);
+    const entrancePoint2 = new BMap.Point(entranceLocation.lng, entranceLocation.lat);
     
-    // 设置起点终点标记
     startMarker = new BMap.Marker(startPoint);
     startMarker.setIcon(new BMap.Icon("https://api.map.baidu.com/images/marker_red_sprite.png", new BMap.Size(23, 25)));
     map.addOverlay(startMarker);
     
-    endMarker = new BMap.Marker(endPoint);
+    endMarker = new BMap.Marker(entrancePoint2);
     endMarker.setIcon(new BMap.Icon("https://api.map.baidu.com/images/marker_red_sprite.png", new BMap.Size(23, 25)));
     map.addOverlay(endMarker);
     
-    // 添加标签
     const startLabel = new BMap.Label(startInput, {
         offset: new BMap.Size(20, -10)
     });
     startMarker.setLabel(startLabel);
     
-    const endLabel = new BMap.Label(endInput, {
+    const endLabel = new BMap.Label(entrancePoint, {
         offset: new BMap.Size(20, -10)
     });
     endMarker.setLabel(endLabel);
     
-    // 进行路线规划
-    walking.search(startPoint, endPoint);
+    walking.search(startPoint, entrancePoint2);
     
-    // 显示简单的文字导航
     const textNavigation = document.getElementById("text-navigation");
-    textNavigation.innerHTML = `<strong>导航信息：</strong><br>正在计算从 ${startInput} 到 ${endInput} 的最佳路线...`;
+    textNavigation.innerHTML = `<strong>导航信息：</strong><br>正在计算从 ${startInput} 到 ${endInput} 教室的最佳路线...`;
 }
 
 // 步行路线搜索完成回调
@@ -154,31 +323,35 @@ function walkingSearchComplete(results) {
     const plan = results.getPlan(0);
     const textNavigation = document.getElementById("text-navigation");
     
-    // 根据不同起点生成不同的文字导航
-    const startInput = currentStartPoint;
-    let navigationText = "";
+    const entrancePoint = buildingLayout[currentEndPoint];
+    const roomDirectionText = roomDirections[currentEndPoint] || "未找到该教室的详细导航";
     
-    switch(startInput) {
+    // 显示室外导航
+    let navigationText = "<strong>室外导航指南：</strong><br>";
+    
+    switch(currentStartPoint) {
         case "海棠七号楼":
-            navigationText = "<strong>导航指南：</strong><br>1. 从海棠七号楼出发，向北方向行走<br>2. 沿着校园内部道路直行<br>3. 到达B栋教学楼";
+            navigationText += "1. 从海棠七号楼出发，向南方向行走<br>2. 沿着校园内部道路直行<br>3. 到达" + entrancePoint + "<br>";
             break;
         case "海棠八号楼":
-            navigationText = "<strong>导航指南：</strong><br>1. 从海棠八号楼出发，向北方向行走<br>2. 沿着校园内部道路直行<br>3. 到达B栋教学楼";
+            navigationText += "1. 从海棠八号楼出发，向南方向行走<br>2. 沿着校园内部道路直行<br>3. 到达" + entrancePoint + "<br>";
             break;
         case "海棠九号楼":
-            navigationText = "<strong>导航指南：</strong><br>1. 从海棠九号楼出发，向西北方向行走<br>2. 沿着校园内部道路直行<br>3. 到达B栋教学楼";
+            navigationText += "1. 从海棠九号楼出发，向南方向行走<br>2. 沿着校园内部道路直行<br>3. 到达" + entrancePoint + "<br>";
             break;
         default:
-            navigationText = "<strong>导航指南：</strong><br>请选择有效的起点";
+            navigationText += "请选择有效的起点";
     }
     
-    // 添加路线信息
-    navigationText += `<br><br>总距离: ${plan.getDistance(true)}<br>预计时间: ${plan.getDuration(true)}`;
+    navigationText += `<br>总距离: ${plan.getDistance(true)}<br>预计时间: ${plan.getDuration(true)}`;
     
     textNavigation.innerHTML = navigationText;
     
-    // 保存导航信息到本地存储
+    // 保存导航信息到本地存储，供detail.html使用
     localStorage.setItem("navigationStartPoint", currentStartPoint);
+    localStorage.setItem("navigationEndPoint", currentEndPoint);
+    localStorage.setItem("entrancePoint", entrancePoint);
+    localStorage.setItem("roomDirection", roomDirectionText);
 }
 
 // 页面加载完成时初始化地图
