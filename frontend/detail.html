@@ -26,7 +26,7 @@
                     楼内导航文字将在这里显示
                 </div>
                 <div id="detail-content">
-                    <p>注:默认从教学楼北边的出入口进入，南楼教室从东到西序号增大，梯度下降</p>
+                    <p>注:螺旋楼梯指的是靠近北侧的小楼梯，盘旋上升，其标号越小越靠近东边，如果你找不到楼梯标号，根据入口选择最近的楼梯即可</p>
                 </div>
             </div>
             <div class="floor-plan-photo">
@@ -46,7 +46,7 @@
             const roomDirection = localStorage.getItem("roomDirection");
             
             if (fromPoint && toPoint) {
-                document.getElementById('route-title').textContent = `从 ${fromPoint} 到 ${toPoint} 教室的导航`;
+                document.getElementById('route-title').textContent = `楼内导航`;
                 
                 if (roomDirection) {
                     document.getElementById('detail-text-navigation').innerHTML = roomDirection;

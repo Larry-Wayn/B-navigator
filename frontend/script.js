@@ -18,6 +18,181 @@ const buildingLocations = {
     "B北口12": { lng: 108.838536, lat: 34.132346 }  // 去往北楼的小楼梯口：108.838536,34.132346
 };
 
+// 自定义小路路径定义
+const customPaths = [
+    {
+        from: "海棠九号楼",
+        to: "B北口12",
+        path: [
+            { lng: 108.838455, lat: 34.135372 },
+            { lng: 108.837597, lat: 34.133915 },
+            { lng: 108.838136, lat: 34.132727 },
+            { lng: 108.838536, lat: 34.132346 }
+
+        ],
+        description: "从海棠九号楼出发,沿途中路线直接抵达B北口12,从此上至小楼梯。"
+    },
+    {
+        from: "海棠九号楼",
+        to: "B北口11",
+        path: [
+            { lng: 108.838455, lat: 34.135372 },
+            { lng: 108.837597, lat: 34.133907 }, 
+            { lng: 108.837947, lat: 34.133078 },
+            { lng: 108.837579, lat: 34.132652 }
+        ],
+        description: "从海棠九号楼出发,沿途中路线抵达B北口11,从这里上至大平台。"
+    },
+    {
+        from: "海棠九号楼",
+        to: "B北口10",
+        path: [
+            { lng: 108.838455, lat: 34.135372 },
+            { lng: 108.837606, lat: 34.1339 },
+            { lng: 108.837525, lat: 34.133213 }, 
+            { lng: 108.837336, lat: 34.132884 },
+            { lng: 108.836932, lat: 34.13285 }
+        ],
+        description: "从海棠九号楼出发,沿途中路线行走,穿过A楼底部走廊,抵达B北口10。"
+    },
+    {
+        from: "海棠九号楼",
+        to: "B北口9",
+        path: [
+            { lng: 108.838455, lat: 34.135372 },
+            { lng: 108.837606, lat: 34.1339 },
+            { lng: 108.837525, lat: 34.133213 }, 
+            { lng: 108.837336, lat: 34.132884 },
+            { lng: 108.837341, lat: 34.13269 }
+        ],
+        description: "从海棠九号楼出发,沿途中路线行走,穿过A楼底部走廊,抵达B北口9。"
+    },
+    {
+        from: "海棠九号楼",
+        to: "B北口8",
+        path: [
+            { lng: 108.838455, lat: 34.135372 },
+            { lng: 108.837597, lat: 34.133907 }, 
+            { lng: 108.837947, lat: 34.133078 },
+            { lng: 108.837656, lat: 34.13251 }
+        ],
+        description: "从海棠九号楼出发,沿途中路线抵达B北口8。"
+    },
+    {
+        from: "海棠九号楼",
+        to: "B北口7",
+        path: [
+            { lng: 108.838455, lat: 34.135372 },
+            { lng: 108.837597, lat: 34.133907 }, 
+            { lng: 108.837947, lat: 34.133078 },
+            { lng: 108.837656, lat: 34.13251 },
+            { lng: 108.837777, lat: 34.132466 }
+        ],
+        description: "从海棠九号楼出发,沿途中路线,先到达北口8,进入走廊向东行走4m,抵达B北口7。"
+    },
+    {
+        from: "海棠九号楼",
+        to: "B北口6",
+        path: [
+            { lng: 108.838455, lat: 34.135372 },
+            { lng: 108.837597, lat: 34.133907 }, 
+            { lng: 108.837947, lat: 34.133078 },
+            { lng: 108.837656, lat: 34.13251 },
+            { lng: 108.838019, lat: 34.132346 }
+        ],
+        description: "从海棠九号楼出发,沿途中路线,先到达北口8,进入走廊向东行走8m,抵达B北口6。"
+    },
+    {
+        from: "海棠九号楼",
+        to: "B北口5",
+        path: [
+            { lng: 108.838455, lat: 34.135372 },
+            { lng: 108.837597, lat: 34.133907 }, 
+            { lng: 108.837947, lat: 34.133078 },
+            { lng: 108.837656, lat: 34.13251 },
+            { lng: 108.838235, lat: 34.132271 }//108.838621,34.132316
+        ],
+        description: "从海棠九号楼出发,沿途中路线,先到达北口8,进入走廊向东行走12m,抵达B北口5。"
+    },
+    {
+        from: "海棠九号楼",
+        to: "B北口4",
+        path: [
+            { lng: 108.838455, lat: 34.135372 },
+            { lng: 108.837597, lat: 34.133915 },
+            { lng: 108.838136, lat: 34.132727 },
+            { lng: 108.838621, lat: 34.132316 },
+            { lng: 108.838558, lat: 34.132152 }
+        ],
+        description: "从海棠九号楼出发,沿途中路线穿过走廊,抵达B北口4。"
+    },
+    {
+        from: "海棠九号楼",
+        to: "B北口3",
+        path: [
+            { lng: 108.838455, lat: 34.135372 },
+            { lng: 108.838028, lat: 34.134628 },
+            { lng: 108.83889, lat: 34.13427 },
+            { lng: 108.838055, lat: 34.132611 },
+            { lng: 108.839115, lat: 34.132126 },
+            { lng: 108.839012, lat: 34.131939 }
+        ],
+        description: "从海棠九号楼出发,沿途中路线,抵达B北口3。"
+    },
+    {
+        from: "海棠九号楼",
+        to: "B北口2",
+        path: [
+            { lng: 108.838455, lat: 34.135372 },
+            { lng: 108.838028, lat: 34.134628 },
+            { lng: 108.83889, lat: 34.13427 },
+            { lng: 108.838055, lat: 34.132611 },
+            { lng: 108.839115, lat: 34.132126 },
+            { lng: 108.839272, lat: 34.131834 }
+        ],
+        description: "从海棠九号楼出发,沿途中路线,经过北口3后向东约4m,抵达B北口2。"
+    },
+    {
+        from: "海棠九号楼",
+        to: "B北口1",
+        path: [
+            { lng: 108.838455, lat: 34.135372 },
+            { lng: 108.838028, lat: 34.134628 },
+            { lng: 108.83889, lat: 34.13427 },
+            { lng: 108.838055, lat: 34.132611 },
+            { lng: 108.839115, lat: 34.132126 },
+            { lng: 108.839488, lat: 34.131726 }
+        ],
+        description: "从海棠九号楼出发,沿途中路线,经过北口3后向东约8m,抵达B北口1。"
+    }
+];
+
+const basePaths = customPaths;
+
+// 定义楼栋间连接路径：使用路径继承
+const buildingConnectors = {
+    "海棠七号楼": [
+        { 
+            to: "海棠八号楼", 
+            path: [
+                { lng: 108.839434, lat: 34.136048 }, // 七号楼
+                { lng: 108.839254, lat: 34.136119 }  // 八号楼
+            ],
+            desc: "向南步行至海棠八号楼"
+        }
+    ],
+    "海棠八号楼": [
+        { 
+            to: "海棠九号楼", 
+            path: [
+                { lng: 108.839254, lat: 34.136119 }, // 八号楼
+                { lng: 108.838455, lat: 34.135372 }   // 九号楼
+            ],
+            desc: "向南步行至海棠九号楼"
+        }
+    ]
+};
+
 // 定义B楼内部的教室布局图
 const buildingLayout = {
     // 南楼
@@ -194,7 +369,7 @@ let currentEndPoint = "";
 function initMap() {
     map = new BMap.Map("map");
     const schoolCenter = new BMap.Point(108.837606, 34.133907);  // 108.837606,34.133907
-    map.centerAndZoom(schoolCenter, 18);
+    map.centerAndZoom(schoolCenter, 18);  // 放大倍数
     map.enableScrollWheelZoom();
     map.addControl(new BMap.NavigationControl());
     map.addControl(new BMap.ScaleControl());
@@ -235,124 +410,164 @@ function updateDetailLink() {
     }
 }
 
-// 绘制校园内的建筑物
-function drawCampusBuildings() {
-    for (const [name, location] of Object.entries(buildingLocations)) {
-        const point = new BMap.Point(location.lng, location.lat);
-        const marker = new BMap.Marker(point);
-        map.addOverlay(marker);
-        
-        const label = new BMap.Label(name, {
-            offset: new BMap.Size(20, -10)
-        });
-        marker.setLabel(label);
+// 动态路径生成器
+function generateCustomPath(startBuilding, targetEntrance) {
+    // 1. 检查是否直接存在路径
+    const directPath = basePaths.find(p => p.from === startBuilding && p.to === targetEntrance);
+    if (directPath) return directPath;
+
+    // 2. 查找连接路径+基础路径组合
+    const connectors = buildingConnectors[startBuilding];
+    if (!connectors) return null;
+
+    for (const connector of connectors) {
+        const subPath = generateCustomPath(connector.to, targetEntrance);
+        if (subPath) {
+            return {
+                from: startBuilding,
+                to: targetEntrance,
+                path: [...connector.path, ...subPath.path.slice(1)], // 去重连接点
+                description: `${connector.desc}，然后${subPath.description}`
+            };
+        }
     }
+    return null;
 }
 
-// 路线查询
+// 匹配自定义路径
+function useCustomPathIfAvailable(start, endEntrance, map, textNavigation) {
+    const dynamicPath = generateCustomPath(start, endEntrance);
+    if (!dynamicPath) return false;
+
+    const pathPoints = dynamicPath.path.map(p => new BMap.Point(p.lng, p.lat)); // 修正为 dynamicPath.path
+    const polyline = new BMap.Polyline(pathPoints, {
+        strokeColor: "blue",
+        strokeWeight: 4,
+        strokeOpacity: 0.8
+    });
+    map.addOverlay(polyline);
+
+    const startMarker = new BMap.Marker(pathPoints[0]);
+    const endMarker = new BMap.Marker(pathPoints[pathPoints.length - 1]);
+    map.addOverlay(startMarker);
+    map.addOverlay(endMarker);
+
+    map.setViewport(pathPoints);
+
+    textNavigation.innerHTML = `<strong>室外导航：</strong><br>${dynamicPath.description}`;
+    return true;
+}
+
+// 主体导航逻辑
 function searchRoute() {
     const startInput = document.getElementById("start-point").value;
     const endInput = document.getElementById("end-point").value;
-    
+
     if (!startInput) {
         alert("请选择起点宿舍楼！");
         return;
     }
-    
+
     if (!endInput) {
         alert("请选择目标教室！");
         return;
     }
-    
+
     currentStartPoint = startInput;
     currentEndPoint = endInput;
-    
+
     updateDetailLink();
-    
     map.clearOverlays();
-    
+
     const entrancePoint = buildingLayout[endInput];
-    
+    const textNavigation = document.getElementById("text-navigation");
+
     if (!entrancePoint) {
         alert("无法确定该教室的入口，请重试！");
         return;
     }
-    
+
     const startLocation = buildingLocations[startInput];
     const entranceLocation = buildingLocations[entrancePoint];
-    
+
     if (!startLocation || !entranceLocation) {
         alert("无法获取位置信息，请重试！");
         return;
     }
-    
+
     const startPoint = new BMap.Point(startLocation.lng, startLocation.lat);
     const entrancePoint2 = new BMap.Point(entranceLocation.lng, entranceLocation.lat);
-    
+
+    // 优先使用自定义路径
+    if (useCustomPathIfAvailable(startInput, entrancePoint, map, textNavigation)) {
+        localStorage.setItem("navigationStartPoint", currentStartPoint);
+        localStorage.setItem("navigationEndPoint", currentEndPoint);
+        localStorage.setItem("entrancePoint", entrancePoint);
+        localStorage.setItem("roomDirection", roomDirections[currentEndPoint] || "");
+        return;
+    }
+
+    // 百度 API 路径规划
     startMarker = new BMap.Marker(startPoint);
     startMarker.setIcon(new BMap.Icon("https://api.map.baidu.com/images/marker_red_sprite.png", new BMap.Size(23, 25)));
     map.addOverlay(startMarker);
-    
+
     endMarker = new BMap.Marker(entrancePoint2);
     endMarker.setIcon(new BMap.Icon("https://api.map.baidu.com/images/marker_red_sprite.png", new BMap.Size(23, 25)));
     map.addOverlay(endMarker);
-    
-    const startLabel = new BMap.Label(startInput, {
-        offset: new BMap.Size(20, -10)
-    });
+
+    const startLabel = new BMap.Label(startInput, { offset: new BMap.Size(20, -10) });
+    const endLabel = new BMap.Label(entrancePoint, { offset: new BMap.Size(20, -10) });
+
     startMarker.setLabel(startLabel);
-    
-    const endLabel = new BMap.Label(entrancePoint, {
-        offset: new BMap.Size(20, -10)
-    });
     endMarker.setLabel(endLabel);
-    
+
     walking.search(startPoint, entrancePoint2);
-    
-    const textNavigation = document.getElementById("text-navigation");
+
     textNavigation.innerHTML = `<strong>导航信息：</strong><br>正在计算从 ${startInput} 到 ${endInput} 教室的最佳路线...`;
 }
 
-// 步行路线搜索完成回调
+// 百度API路径结果处理
 function walkingSearchComplete(results) {
     if (walking.getStatus() != BMAP_STATUS_SUCCESS) {
         alert("路线规划失败，请重试");
         return;
     }
-    
+
     const plan = results.getPlan(0);
-    const textNavigation = document.getElementById("text-navigation");
-    
     const entrancePoint = buildingLayout[currentEndPoint];
     const roomDirectionText = roomDirections[currentEndPoint] || "未找到该教室的详细导航";
-    
-    // 显示室外导航
-    let navigationText = "<strong>室外导航指南：</strong><br>";
-    
-    switch(currentStartPoint) {
-        case "海棠七号楼":
-            navigationText += "1. 从海棠七号楼出发，向南方向行走<br>2. 沿着校园内部道路直行<br>3. 到达" + entrancePoint + "<br>";
-            break;
-        case "海棠八号楼":
-            navigationText += "1. 从海棠八号楼出发，向南方向行走<br>2. 沿着校园内部道路直行<br>3. 到达" + entrancePoint + "<br>";
-            break;
-        case "海棠九号楼":
-            navigationText += "1. 从海棠九号楼出发，向南方向行走<br>2. 沿着校园内部道路直行<br>3. 到达" + entrancePoint + "<br>";
-            break;
-        default:
-            navigationText += "请选择有效的起点";
+    const textNavigation = document.getElementById("text-navigation");
+
+    // 提取路线步骤详细说明
+    let stepsDescription = "";
+    const routes = plan.getRoute(0); // 获取第一条路线
+    const steps = routes.getSteps(); // 从路线中获取步骤
+    for (let j = 0; j < steps.length; j++) {
+        let description = steps[j].getDescription();
+        description = description.replace(/<[^>]+>/g, ''); // 去除 HTML 标签
+        stepsDescription += (j + 1) + ". " + description + "<br>";
     }
-    
-    navigationText += `<br>总距离: ${plan.getDistance(true)}<br>预计时间: ${plan.getDuration(true)}`;
-    
+
+    // 更新导航文字，包含详细步骤
+    let navigationText = `<strong>室外导航指南：</strong><br>总距离: ${plan.getDistance(true)}<br>预计时间: ${plan.getDuration(true)}<br><br><strong>详细步骤：</strong><br>${stepsDescription}`;
     textNavigation.innerHTML = navigationText;
-    
-    // 保存导航信息到本地存储，供detail.html使用
+
     localStorage.setItem("navigationStartPoint", currentStartPoint);
     localStorage.setItem("navigationEndPoint", currentEndPoint);
     localStorage.setItem("entrancePoint", entrancePoint);
     localStorage.setItem("roomDirection", roomDirectionText);
 }
 
-// 页面加载完成时初始化地图
+// 绘制校园建筑标签
+function drawCampusBuildings() {
+    for (const [name, location] of Object.entries(buildingLocations)) {
+        const point = new BMap.Point(location.lng, location.lat);
+        const marker = new BMap.Marker(point);
+        map.addOverlay(marker);
+        const label = new BMap.Label(name, { offset: new BMap.Size(20, -10) });
+        marker.setLabel(label);
+    }
+}
+
 window.onload = initMap;
