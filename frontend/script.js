@@ -3,6 +3,7 @@ const buildingLocations = {
     "海棠七号楼": { lng: 108.839434, lat: 34.136048 },  // 108.839434,34.136048
     "海棠八号楼": { lng: 108.839254, lat: 34.136119 },  // 108.839254,34.136119
     "海棠九号楼": { lng: 108.838455, lat: 34.135372 }, // 108.838455,34.135372
+    "竹园一号楼": { lng: 108.846557, lat: 34.132473 }, //108.846557,34.132473
     "B栋教学楼": { lng: 108.838225, lat: 34.132495 },  // 108.838225,34.132495
     "B北口1": { lng: 108.839488, lat: 34.131726 },  // 108.839488,34.131726
     "B北口2": { lng: 108.839272, lat: 34.131834 },  // 108.839272,34.131834
@@ -357,6 +358,149 @@ const roomDirections = {
     "443": "从北口12进入,沿着小楼梯向上走一层,向东边看到的第一个教室即是443教室。"
 };
 
+// 定义图结构:避障后定义的节点（模拟拐点和道路）
+// 避开D楼+C楼的真实通路图节点
+const zhuyuanNodes = {
+    "竹园一号楼": { lng: 108.846557, lat: 34.132473 }, // 宿舍位置
+
+    // 主校道：向东绕开 D楼/C楼
+    "P1": { lng: 108.845400, lat: 34.132500 }, // 出门向东
+    "P2": { lng: 108.843000, lat: 34.132500 }, // 校道中部，避开D楼
+    "P3": { lng: 108.841200, lat: 34.132400 }, // 校道近东侧，绕过C楼
+    "P4": { lng: 108.840000, lat: 34.132300 }, // 靠近B楼外沿点
+    "P5": { lng: 108.839600, lat: 34.132300 }, // 进入B北口前缓冲节点
+
+    // 可通行的北口
+    "B北口3": { lng: 108.839012, lat: 34.131939 },
+    "B北口4": { lng: 108.838558, lat: 34.132152 },
+    "B北口5": { lng: 108.838235, lat: 34.132271 },
+    "B北口6": { lng: 108.838019, lat: 34.132346 },
+    "B北口7": { lng: 108.837777, lat: 34.132466 },
+    "B北口8": { lng: 108.837656, lat: 34.13251 }
+};
+
+const zhuyuanGraph = {};
+
+function addEdge(graph, a, b, nodes) {
+    if (!graph[a]) graph[a] = [];
+    if (!graph[b]) graph[b] = [];
+    const dist = Math.sqrt(
+        Math.pow(nodes[a].lng - nodes[b].lng, 2) +
+        Math.pow(nodes[a].lat - nodes[b].lat, 2)
+    );
+    graph[a].push({ node: b, weight: dist });
+    graph[b].push({ node: a, weight: dist });
+}
+
+// 只添加通行路径，避免穿越 D楼和 C楼
+addEdge(zhuyuanGraph, "竹园一号楼", "P1", zhuyuanNodes);
+addEdge(zhuyuanGraph, "P1", "P2", zhuyuanNodes);
+addEdge(zhuyuanGraph, "P2", "P3", zhuyuanNodes);
+addEdge(zhuyuanGraph, "P3", "P4", zhuyuanNodes);
+addEdge(zhuyuanGraph, "P4", "P5", zhuyuanNodes);
+
+// 接入北口入口（从 P5 分支）
+addEdge(zhuyuanGraph, "P5", "B北口3", zhuyuanNodes);
+addEdge(zhuyuanGraph, "P5", "B北口4", zhuyuanNodes);
+addEdge(zhuyuanGraph, "P5", "B北口5", zhuyuanNodes);
+addEdge(zhuyuanGraph, "P5", "B北口6", zhuyuanNodes);
+addEdge(zhuyuanGraph, "P5", "B北口7", zhuyuanNodes);
+addEdge(zhuyuanGraph, "P5", "B北口8", zhuyuanNodes);
+
+// MinHeap 类
+class MinHeap {
+    constructor() {
+        this.heap = [];
+    }
+    push(node, priority) {
+        this.heap.push({ node, priority });
+        this.bubbleUp(this.heap.length - 1);
+    }
+    pop() {
+        if (this.heap.length === 0) return null;
+        if (this.heap.length === 1) return this.heap.pop();
+        const min = this.heap[0];
+        this.heap[0] = this.heap.pop();
+        this.sinkDown(0);
+        return min;
+    }
+    bubbleUp(index) {
+        const element = this.heap[index];
+        while (index > 0) {
+            const parentIndex = Math.floor((index - 1) / 2);
+            const parent = this.heap[parentIndex];
+            if (element.priority >= parent.priority) break;
+            this.heap[index] = parent;
+            index = parentIndex;
+        }
+        this.heap[index] = element;
+    }
+    sinkDown(index) {
+        const length = this.heap.length;
+        const element = this.heap[index];
+        while (true) {
+            let leftChildIndex = 2 * index + 1;
+            let rightChildIndex = 2 * index + 2;
+            let swap = null;
+            if (leftChildIndex < length && this.heap[leftChildIndex].priority < element.priority) {
+                swap = leftChildIndex;
+            }
+            if (rightChildIndex < length && this.heap[rightChildIndex].priority < (swap === null ? element.priority : this.heap[leftChildIndex].priority)) {
+                swap = rightChildIndex;
+            }
+            if (swap === null) break;
+            this.heap[index] = this.heap[swap];
+            index = swap;
+        }
+        this.heap[index] = element;
+    }
+    isEmpty() {
+        return this.heap.length === 0;
+    }
+}
+
+// Dijkstra 算法
+function dijkstra(graph, start, end) {
+    const distances = {};
+    const parents = {};
+    const visited = new Set();
+    const pq = new MinHeap();
+
+    for (const node in graph) {
+        distances[node] = Infinity;
+        parents[node] = null;
+    }
+    distances[start] = 0;
+    pq.push(start, 0);
+
+    while (!pq.isEmpty()) {
+        const { node: current } = pq.pop();
+
+        if (visited.has(current)) continue;
+        visited.add(current);
+
+        if (current === end) break;
+
+        for (const { node: neighbor, weight } of graph[current]) {
+            if (visited.has(neighbor)) continue;
+            const newDist = distances[current] + weight;
+            if (newDist < distances[neighbor]) {
+                distances[neighbor] = newDist;
+                parents[neighbor] = current;
+                pq.push(neighbor, newDist);
+            }
+        }
+    }
+
+    const path = [];
+    let current = end;
+    while (current !== null) {
+        path.unshift(current);
+        current = parents[current];
+    }
+    return path.length > 1 && path[0] === start ? path : [];
+}
+
 // 地图和路线规划变量
 let map;
 let walking;
@@ -507,7 +651,55 @@ function searchRoute() {
         return;
     }
 
-    // 百度 API 路径规划
+    // 起点为竹园一号楼时，使用 Dijkstra 算法
+    if (startInput === "竹园一号楼") {
+        const pathNodeNames = dijkstra(zhuyuanGraph, "竹园一号楼", entrancePoint);
+        if (pathNodeNames.length === 0) {
+            textNavigation.innerHTML = `<strong>导航信息：</strong><br>未能找到从竹园一号楼到 ${endInput} 的路径。`;
+            return;
+        }
+
+        const pathPoints = pathNodeNames.map(name => {
+            const node = zhuyuanNodes[name];
+            return new BMap.Point(node.lng, node.lat);
+        });
+
+        const polyline = new BMap.Polyline(pathPoints, {
+            strokeColor: "green",
+            strokeWeight: 4,
+            strokeOpacity: 0.8
+        });
+        map.addOverlay(polyline);
+
+        const startMarker = new BMap.Marker(pathPoints[0]);
+        const endMarker = new BMap.Marker(pathPoints[pathPoints.length - 1]);
+        map.addOverlay(startMarker);
+        map.addOverlay(endMarker);
+
+        map.setViewport(pathPoints);
+
+        // 构建文字说明（过滤中转点）
+        const readableSteps = pathNodeNames
+            .filter(name => !(name.startsWith("P") && !buildingLocations[name]))
+            .map((name, index) => `${index + 1}. 到达 ${name}`)
+            .join("<br>");
+
+        const roomDirectionText = roomDirections[endInput] || "";
+
+        textNavigation.innerHTML = `
+            <strong>室外导航：</strong><br>
+            从竹园一号楼出发，经过以下路径：<br>${readableSteps}<br><br>
+            <strong>室内导航：</strong><br>${roomDirectionText}
+        `;
+
+        localStorage.setItem("navigationStartPoint", currentStartPoint);
+        localStorage.setItem("navigationEndPoint", currentEndPoint);
+        localStorage.setItem("entrancePoint", entrancePoint);
+        localStorage.setItem("roomDirection", roomDirectionText);
+        return;
+    }
+
+    // 其他情况：仅显示 marker，不使用百度步行导航
     startMarker = new BMap.Marker(startPoint);
     startMarker.setIcon(new BMap.Icon("https://api.map.baidu.com/images/marker_red_sprite.png", new BMap.Size(23, 25)));
     map.addOverlay(startMarker);
@@ -522,9 +714,9 @@ function searchRoute() {
     startMarker.setLabel(startLabel);
     endMarker.setLabel(endLabel);
 
-    walking.search(startPoint, entrancePoint2);
+    map.setViewport([startPoint, entrancePoint2]);
 
-    textNavigation.innerHTML = `<strong>导航信息：</strong><br>正在计算从 ${startInput} 到 ${endInput} 教室的最佳路线...`;
+    textNavigation.innerHTML = `<strong>导航信息：</strong><br>已展示起点与终点位置，暂无推荐路径。`;
 }
 
 // 百度API路径结果处理
