@@ -1,4 +1,4 @@
-// 定义出发点坐标（使用拾取坐标系统）
+// 定义坐标（使用拾取坐标系统）
 const buildingLocations = {
     "海棠七号楼": { lng: 108.839434, lat: 34.136048 },  // 108.839434,34.136048
     "海棠八号楼": { lng: 108.839254, lat: 34.136119 },  // 108.839254,34.136119
@@ -19,7 +19,7 @@ const buildingLocations = {
     "B北口12": { lng: 108.838536, lat: 34.132346 }  // 去往北楼的小楼梯口：108.838536,34.132346
 };
 
-// 自定义小路路径定义
+// 自定义路径
 const customPaths = [
     {
         from: "海棠九号楼",
@@ -170,7 +170,7 @@ const customPaths = [
 
 const basePaths = customPaths;
 
-// 定义楼栋间连接路径：使用路径继承
+// 定义不同楼间连接路径：使用路径继承
 const buildingConnectors = {
     "海棠七号楼": [
         { 
@@ -528,11 +528,9 @@ function initMap() {
     });
 
     drawCampusBuildings();
-    
     document.getElementById("search-route").addEventListener("click", searchRoute);
     
     updateDetailLink();
-    
     document.getElementById("start-point").addEventListener("change", function() {
         currentStartPoint = this.value;
         updateDetailLink();
@@ -583,7 +581,7 @@ function useCustomPathIfAvailable(start, endEntrance, map, textNavigation) {
     const dynamicPath = generateCustomPath(start, endEntrance);
     if (!dynamicPath) return false;
 
-    const pathPoints = dynamicPath.path.map(p => new BMap.Point(p.lng, p.lat)); // 修正为 dynamicPath.path
+    const pathPoints = dynamicPath.path.map(p => new BMap.Point(p.lng, p.lat)); 
     const polyline = new BMap.Polyline(pathPoints, {
         strokeColor: "blue",
         strokeWeight: 4,
