@@ -86,5 +86,5 @@
 |442  443  小楼梯  四层通道2  437  四层通道1   434  433  大平台(北口11)|
 
 ### 页面展示
-![presentation](B-navigator/frontend/images/web1.png)
-![presentation](B-navigator/frontend/images/web2.png)
+![presentation](frontend/images/web1.png)
+![presentation](frontend/images/web2.png)
