@@ -358,65 +358,112 @@ const roomDirections = {
     "443": "从北口12进入,沿着小楼梯向上走一层,向东边看到的第一个教室即是443教室。"
 };
 
-// 定义图结构:避障后定义的节点（模拟拐点和道路）
-// 避开D楼+C楼的真实通路图节点
+// 定义图结构:加入了避障
 const zhuyuanNodes = {
-    "竹园一号楼": { lng: 108.846557, lat: 34.132473 }, // 宿舍位置
+    "竹园一号楼": { lng: 108.846557, lat: 34.132473 }, 
 
-    // 主校道：向东绕开 D楼/C楼
+    // 定义路径中间节点
     "P1": { lng: 108.845400, lat: 34.132500 }, // 出门向东
     "P2": { lng: 108.843000, lat: 34.132500 }, // 校道中部，避开D楼
     "P3": { lng: 108.841200, lat: 34.132400 }, // 校道近东侧，绕过C楼
     "P4": { lng: 108.840000, lat: 34.132300 }, // 靠近B楼外沿点
-    "P5": { lng: 108.839600, lat: 34.132300 }, // 进入B北口前缓冲节点
+    "P5": { lng: 108.839600, lat: 34.132300 }, // 进入B北口节点
 
-    // 可通行的北口
+    // 北口
+    "B北口1": { lng: 108.839488, lat: 34.131726 },  
+    "B北口2": { lng: 108.839272, lat: 34.131834 },  
     "B北口3": { lng: 108.839012, lat: 34.131939 },
     "B北口4": { lng: 108.838558, lat: 34.132152 },
     "B北口5": { lng: 108.838235, lat: 34.132271 },
     "B北口6": { lng: 108.838019, lat: 34.132346 },
     "B北口7": { lng: 108.837777, lat: 34.132466 },
-    "B北口8": { lng: 108.837656, lat: 34.13251 }
+    "B北口8": { lng: 108.837656, lat: 34.13251 },
+    "B北口9": { lng: 108.837341, lat: 34.13269 },  
+    "B北口10": { lng: 108.836932, lat: 34.13285 },  
+    "B北口11": { lng: 108.837579, lat: 34.132652 },  
+    "B北口12": { lng: 108.838536, lat: 34.132346 }  
 };
 
-const zhuyuanGraph = {};
+// 计算两点之间的距离（使用Haversine公式，考虑地球曲率）
+function calculateDistance(lat1, lng1, lat2, lng2) {
+    // 将经纬度转换为弧度
+    const toRadians = (degree) => degree * Math.PI / 180;
+    
+    const R = 6371000; // 地球半径，单位为米
+    const φ1 = toRadians(lat1);
+    const φ2 = toRadians(lat2);
+    const Δφ = toRadians(lat2 - lat1);
+    const Δλ = toRadians(lng2 - lng1);
 
-function addEdge(graph, a, b, nodes) {
-    if (!graph[a]) graph[a] = [];
-    if (!graph[b]) graph[b] = [];
-    const dist = Math.sqrt(
-        Math.pow(nodes[a].lng - nodes[b].lng, 2) +
-        Math.pow(nodes[a].lat - nodes[b].lat, 2)
-    );
-    graph[a].push({ node: b, weight: dist });
-    graph[b].push({ node: a, weight: dist });
+    // Haversine公式
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    
+    // 返回距离（单位：米）
+    return R * c;
 }
 
-// 只添加通行路径，避免穿越 D楼和 C楼
+// 定义图结构并添加边，根据实际距离调整权重
+function addEdge(graph, from, to, nodes) {
+    if (!graph[from]) graph[from] = {};
+    if (!graph[to]) graph[to] = {};
+    
+    // 获取两点坐标
+    const fromNode = nodes[from];
+    const toNode = nodes[to];
+    
+    // 计算两点之间的实际距离作为权重
+    const weight = calculateDistance(
+        fromNode.lat, fromNode.lng, 
+        toNode.lat, toNode.lng
+    );
+    
+    // 设置双向边的权重为实际距离
+    graph[from][to] = weight;
+    graph[to][from] = weight;
+}
+
+// 初始化图结构
+const zhuyuanGraph = {};
+
+// 添加基本路径
 addEdge(zhuyuanGraph, "竹园一号楼", "P1", zhuyuanNodes);
 addEdge(zhuyuanGraph, "P1", "P2", zhuyuanNodes);
 addEdge(zhuyuanGraph, "P2", "P3", zhuyuanNodes);
 addEdge(zhuyuanGraph, "P3", "P4", zhuyuanNodes);
 addEdge(zhuyuanGraph, "P4", "P5", zhuyuanNodes);
 
-// 接入北口入口（从 P5 分支）
-addEdge(zhuyuanGraph, "P5", "B北口3", zhuyuanNodes);
-addEdge(zhuyuanGraph, "P5", "B北口4", zhuyuanNodes);
-addEdge(zhuyuanGraph, "P5", "B北口5", zhuyuanNodes);
-addEdge(zhuyuanGraph, "P5", "B北口6", zhuyuanNodes);
-addEdge(zhuyuanGraph, "P5", "B北口7", zhuyuanNodes);
-addEdge(zhuyuanGraph, "P5", "B北口8", zhuyuanNodes);
+// 添加从 P5 到每个北口节点的直接边
+for (let i = 1; i <= 12; i++) {
+    const nodeName = `B北口${i}`;
+    addEdge(zhuyuanGraph, "P5", nodeName, zhuyuanNodes);
+}
+
+// 保留北口节点之间的连接
+addEdge(zhuyuanGraph, "B北口1", "B北口2", zhuyuanNodes);
+addEdge(zhuyuanGraph, "B北口2", "B北口3", zhuyuanNodes);
+addEdge(zhuyuanGraph, "B北口3", "B北口4", zhuyuanNodes);
+addEdge(zhuyuanGraph, "B北口4", "B北口5", zhuyuanNodes);
+addEdge(zhuyuanGraph, "B北口5", "B北口6", zhuyuanNodes);
+addEdge(zhuyuanGraph, "B北口6", "B北口7", zhuyuanNodes);
+addEdge(zhuyuanGraph, "B北口7", "B北口8", zhuyuanNodes);
+addEdge(zhuyuanGraph, "B北口8", "B北口9", zhuyuanNodes);
+addEdge(zhuyuanGraph, "B北口9", "B北口10", zhuyuanNodes);
+addEdge(zhuyuanGraph, "B北口10", "B北口11", zhuyuanNodes);
+addEdge(zhuyuanGraph, "B北口11", "B北口12", zhuyuanNodes);
 
 // MinHeap 类
 class MinHeap {
     constructor() {
         this.heap = [];
     }
-    push(node, priority) {
+    push(node, priority) { // 将新元素添加到堆中，并调整堆结构
         this.heap.push({ node, priority });
-        this.bubbleUp(this.heap.length - 1);
+        this.bubbleUp(this.heap.length - 1);  // 维护最小堆的性质
     }
-    pop() {
+    pop() {  // 弹出堆顶元素（优先级最小的元素），并调整堆结构
         if (this.heap.length === 0) return null;
         if (this.heap.length === 1) return this.heap.pop();
         const min = this.heap[0];
@@ -424,7 +471,7 @@ class MinHeap {
         this.sinkDown(0);
         return min;
     }
-    bubbleUp(index) {
+    bubbleUp(index) {  //将指定索引的元素向上调整，直到父节点的优先级更小或到达根节点
         const element = this.heap[index];
         while (index > 0) {
             const parentIndex = Math.floor((index - 1) / 2);
@@ -435,7 +482,7 @@ class MinHeap {
         }
         this.heap[index] = element;
     }
-    sinkDown(index) {
+    sinkDown(index) {  // 将指定索引的元素向下调整，直到子节点的优先级更大或到达叶子节点
         const length = this.heap.length;
         const element = this.heap[index];
         while (true) {
@@ -461,44 +508,48 @@ class MinHeap {
 
 // Dijkstra 算法
 function dijkstra(graph, start, end) {
-    const distances = {};
-    const parents = {};
-    const visited = new Set();
-    const pq = new MinHeap();
+    const distances = {};    // 存储起点到各节点的最短距离
+    const parents = {};      // 存储路径中节点的父节点（用于重建路径）
+    const visited = new Set(); // 记录已处理的节点
+    const pq = new MinHeap(); // 最小优先队列（按距离排序）
 
+    // 初始化所有节点的距离为无穷大，父节点为null
     for (const node in graph) {
         distances[node] = Infinity;
         parents[node] = null;
     }
-    distances[start] = 0;
-    pq.push(start, 0);
+    distances[start] = 0;  // 起点到自身的距离为0
+    pq.push(start, 0);  // 将起点加入队列
 
     while (!pq.isEmpty()) {
         const { node: current } = pq.pop();
-
+        // 如果当前节点已处理跳过
         if (visited.has(current)) continue;
         visited.add(current);
-
+        // 找到终点后提前终止
         if (current === end) break;
-
-        for (const { node: neighbor, weight } of graph[current]) {
-            if (visited.has(neighbor)) continue;
-            const newDist = distances[current] + weight;
+        // 遍历当前节点的所有邻居
+        for (const neighbor in graph[current]) {
+            const weight = graph[current][neighbor];
+            if (visited.has(neighbor)) continue;  // 已处理的邻居跳过
+            const newDist = distances[current] + weight;  // 计算新距离
+            // 若新距离更短，则更新
             if (newDist < distances[neighbor]) {
                 distances[neighbor] = newDist;
-                parents[neighbor] = current;
-                pq.push(neighbor, newDist);
+                parents[neighbor] = current;  // 更新父节点
+                pq.push(neighbor, newDist);  // 将邻居加入队列
             }
         }
     }
 
+    // 重建路径
     const path = [];
     let current = end;
     while (current !== null) {
-        path.unshift(current);
-        current = parents[current];
+        path.unshift(current);  // 将节点添加到路径开头
+        current = parents[current];  // 回溯父节点
     }
-    return path.length > 1 && path[0] === start ? path : [];
+    return path.length > 1 && path[0] === start ? path : [];  // 路径长度需大于 1 且第一个节点是起点
 }
 
 // 地图和路线规划变量
@@ -514,23 +565,23 @@ function initMap() {
     map = new BMap.Map("map");
     const schoolCenter = new BMap.Point(108.837606, 34.133907);  // 108.837606,34.133907
     map.centerAndZoom(schoolCenter, 18);  // 放大倍数
-    map.enableScrollWheelZoom();
+    map.enableScrollWheelZoom();  // 滚轮缩放
     map.addControl(new BMap.NavigationControl());
     map.addControl(new BMap.ScaleControl());
     
     walking = new BMap.WalkingRoute(map, {
         renderOptions: { 
             map: map,
-            autoViewport: true,
-            enableDragging: true
+            autoViewport: true,  // 自动调整视野
+            enableDragging: true  // 允许拖拽
         },
-        onSearchComplete: walkingSearchComplete
+        onSearchComplete: walkingSearchComplete  // 路线搜索完成后的回调函数 walkingSearchComplete
     });
 
-    drawCampusBuildings();
+    drawCampusBuildings();  //绘制校园建筑物
     document.getElementById("search-route").addEventListener("click", searchRoute);
     
-    updateDetailLink();
+    updateDetailLink();  // 更新详情链接
     document.getElementById("start-point").addEventListener("change", function() {
         currentStartPoint = this.value;
         updateDetailLink();
@@ -544,9 +595,9 @@ function initMap() {
 
 // 更新详情链接
 function updateDetailLink() {
-    const detailLink = document.getElementById("detail-link");
+    const detailLink = document.getElementById("detail-link");  // 获取网页中ID为detail-link的元素
     if (currentStartPoint && currentEndPoint) {
-        detailLink.href = `detail.html?from=${encodeURIComponent(currentStartPoint)}&to=${encodeURIComponent(currentEndPoint)}`;
+        detailLink.href = `detail.html?from=${encodeURIComponent(currentStartPoint)}&to=${encodeURIComponent(currentEndPoint)}`;  // 使用模板字符串来构建链接
     } else {
         detailLink.href = "detail.html";
     }
@@ -554,11 +605,11 @@ function updateDetailLink() {
 
 // 动态路径生成器
 function generateCustomPath(startBuilding, targetEntrance) {
-    // 1. 检查是否直接存在路径
+    // 检查是否直接存在路径
     const directPath = basePaths.find(p => p.from === startBuilding && p.to === targetEntrance);
     if (directPath) return directPath;
 
-    // 2. 查找连接路径+基础路径组合
+    // 查找连接路径+基础路径组合
     const connectors = buildingConnectors[startBuilding];
     if (!connectors) return null;
 
@@ -578,25 +629,25 @@ function generateCustomPath(startBuilding, targetEntrance) {
 
 // 匹配自定义路径
 function useCustomPathIfAvailable(start, endEntrance, map, textNavigation) {
-    const dynamicPath = generateCustomPath(start, endEntrance);
+    const dynamicPath = generateCustomPath(start, endEntrance);  // 调用 generateCustomPath 生成路径对象 dynamicPath
     if (!dynamicPath) return false;
 
-    const pathPoints = dynamicPath.path.map(p => new BMap.Point(p.lng, p.lat)); 
-    const polyline = new BMap.Polyline(pathPoints, {
+    const pathPoints = dynamicPath.path.map(p => new BMap.Point(p.lng, p.lat));  // 将 dynamicPath.path 中的经纬度数据转换为百度地图的 BMap.Point 对象数组
+    const polyline = new BMap.Polyline(pathPoints, {  // 使用 BMap.Polyline 创建蓝色折线
         strokeColor: "blue",
         strokeWeight: 4,
         strokeOpacity: 0.8
     });
-    map.addOverlay(polyline);
+    map.addOverlay(polyline);  // 通过 addOverlay 将折线显示在地图上
 
-    const startMarker = new BMap.Marker(pathPoints[0]);
-    const endMarker = new BMap.Marker(pathPoints[pathPoints.length - 1]);
-    map.addOverlay(startMarker);
-    map.addOverlay(endMarker);
+    const startMarker = new BMap.Marker(pathPoints[0]);  // 创建起点标记
+    const endMarker = new BMap.Marker(pathPoints[pathPoints.length - 1]);  // 创建终点标记
+    map.addOverlay(startMarker);  // 添加起点标记到地图
+    map.addOverlay(endMarker);  // 添加终点标记到地图
 
-    map.setViewport(pathPoints);
+    map.setViewport(pathPoints); // 设置视野范围以包含路径点
 
-    textNavigation.innerHTML = `<strong>室外导航：</strong><br>${dynamicPath.description}`;
+    textNavigation.innerHTML = `<strong>室外导航：</strong><br>${dynamicPath.description}`;  // 将路径的 description 字段（如导航步骤）渲染到指定的 HTML 元素中
     return true;
 }
 
@@ -615,13 +666,13 @@ function searchRoute() {
         return;
     }
 
-    currentStartPoint = startInput;
-    currentEndPoint = endInput;
+    currentStartPoint = startInput;  // 更新当前起点
+    currentEndPoint = endInput;  // 更新当前终点
 
     updateDetailLink();
-    map.clearOverlays();
+    map.clearOverlays();  // 清除地图上的所有覆盖物
 
-    const entrancePoint = buildingLayout[endInput];
+    const entrancePoint = buildingLayout[endInput];  // // 从预定义对象查找教室对应的入口
     const textNavigation = document.getElementById("text-navigation");
 
     if (!entrancePoint) {
@@ -629,8 +680,8 @@ function searchRoute() {
         return;
     }
 
-    const startLocation = buildingLocations[startInput];
-    const entranceLocation = buildingLocations[entrancePoint];
+    const startLocation = buildingLocations[startInput];  // 起点坐标
+    const entranceLocation = buildingLocations[entrancePoint];  // 终点坐标
 
     if (!startLocation || !entranceLocation) {
         alert("无法获取位置信息，请重试！");
@@ -640,9 +691,9 @@ function searchRoute() {
     const startPoint = new BMap.Point(startLocation.lng, startLocation.lat);
     const entrancePoint2 = new BMap.Point(entranceLocation.lng, entranceLocation.lat);
 
-    // 优先使用自定义路径
+    // 优先调用 useCustomPathIfAvailable 绘制自定义路径
     if (useCustomPathIfAvailable(startInput, entrancePoint, map, textNavigation)) {
-        localStorage.setItem("navigationStartPoint", currentStartPoint);
+        localStorage.setItem("navigationStartPoint", currentStartPoint);   // 保存到本地存储
         localStorage.setItem("navigationEndPoint", currentEndPoint);
         localStorage.setItem("entrancePoint", entrancePoint);
         localStorage.setItem("roomDirection", roomDirections[currentEndPoint] || "");
@@ -667,8 +718,9 @@ function searchRoute() {
             strokeWeight: 4,
             strokeOpacity: 0.8
         });
-        map.addOverlay(polyline);
-
+        map.addOverlay(polyline);  // 添加路径折线到地图
+        
+        // 添加起点和终点标记
         const startMarker = new BMap.Marker(pathPoints[0]);
         const endMarker = new BMap.Marker(pathPoints[pathPoints.length - 1]);
         map.addOverlay(startMarker);
@@ -676,10 +728,9 @@ function searchRoute() {
 
         map.setViewport(pathPoints);
 
-        // 构建文字说明（过滤中转点）
         const readableSteps = pathNodeNames
-            .filter(name => !(name.startsWith("P") && !buildingLocations[name]))
-            .map((name, index) => `${index + 1}. 到达 ${name}`)
+            .filter(name => !(name.startsWith("P") && !buildingLocations[name]))  // 过滤中转点
+            .map((name, index) => `${index + 1}. 到达 ${name}`)  // 构建文字说明
             .join("<br>");
 
         const roomDirectionText = roomDirections[endInput] || "";
@@ -712,7 +763,7 @@ function searchRoute() {
     startMarker.setLabel(startLabel);
     endMarker.setLabel(endLabel);
 
-    map.setViewport([startPoint, entrancePoint2]);
+    map.setViewport([startPoint, entrancePoint2]);  // 设置视野范围以包含起点和终点
 
     textNavigation.innerHTML = `<strong>导航信息：</strong><br>已展示起点与终点位置，暂无推荐路径。`;
 }
@@ -735,14 +786,14 @@ function walkingSearchComplete(results) {
     const steps = routes.getSteps(); // 从路线中获取步骤
     for (let j = 0; j < steps.length; j++) {
         let description = steps[j].getDescription();
-        description = description.replace(/<[^>]+>/g, ''); // 去除 HTML 标签
-        stepsDescription += (j + 1) + ". " + description + "<br>";
+        description = description.replace(/<[^>]+>/g, ''); // 清理 HTML 标签
+        stepsDescription += (j + 1) + ". " + description + "<br>";  // 将每个步骤转换为带序号的文本
     }
 
-    // 更新导航文字，包含详细步骤
+    // 获取格式化后的总距离、预计时间、步骤描述文本
     let navigationText = `<strong>室外导航指南：</strong><br>总距离: ${plan.getDistance(true)}<br>预计时间: ${plan.getDuration(true)}<br><br><strong>详细步骤：</strong><br>${stepsDescription}`;
     textNavigation.innerHTML = navigationText;
-
+    // 保存导航信息到本地存储
     localStorage.setItem("navigationStartPoint", currentStartPoint);
     localStorage.setItem("navigationEndPoint", currentEndPoint);
     localStorage.setItem("entrancePoint", entrancePoint);
@@ -752,11 +803,11 @@ function walkingSearchComplete(results) {
 // 绘制校园建筑标签
 function drawCampusBuildings() {
     for (const [name, location] of Object.entries(buildingLocations)) {
-        const point = new BMap.Point(location.lng, location.lat);
-        const marker = new BMap.Marker(point);
-        map.addOverlay(marker);
-        const label = new BMap.Label(name, { offset: new BMap.Size(20, -10) });
-        marker.setLabel(label);
+        const point = new BMap.Point(location.lng, location.lat);  // 创建百度地图点对象
+        const marker = new BMap.Marker(point);  // 创建标记
+        map.addOverlay(marker);  // 添加标记到地图
+        const label = new BMap.Label(name, { offset: new BMap.Size(20, -10) });  // 设置标签的偏移量
+        marker.setLabel(label);  // 将标签设置到标记点上
     }
 }
 
